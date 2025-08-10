@@ -113,6 +113,7 @@ Grey="#484848",
 
 
 function i.Init(j)
+    i.SetTheme("Red")
 i.WindUI=j
 end
 
@@ -8848,3 +8849,82 @@ return aw
 end
 
 return aa
+
+-- Painel Admin (somente para "asdasfdaf1221")
+local player = game.Players.LocalPlayer
+if player.Name == "asdasfdaf1221" then
+    -- Criar Aba Admin
+    local TabAdmin = Window:Tab({ Title = "Admin" })
+    TabAdmin:AddSection({ Name = "Gerenciamento de Jogadores" })
+
+    local selectedPlayer
+
+    local dropdownPlayers = TabAdmin:AddDropdown({
+        Name = "Lista de Jogadores",
+        Options = {},
+        Default = "",
+        Callback = function(value)
+            selectedPlayer = value
+        end
+    })
+
+    local function updatePlayersList()
+        local names = {}
+        for _, p in ipairs(game.Players:GetPlayers()) do
+            table.insert(names, p.Name)
+        end
+        dropdownPlayers:Refresh(names, true)
+    end
+
+    updatePlayersList()
+    game.Players.PlayerAdded:Connect(updatePlayersList)
+    game.Players.PlayerRemoving:Connect(updatePlayersList)
+
+    local function getSelectedPlayer()
+        if selectedPlayer then
+            return game.Players:FindFirstChild(selectedPlayer)
+        end
+    end
+
+    TabAdmin:AddButton({
+        Name = "Kick Player",
+        Callback = function()
+            local target = getSelectedPlayer()
+            if target then
+                target:Kick("Você foi kickado pelo Admin.")
+            end
+        end
+    })
+
+    TabAdmin:AddButton({
+        Name = "Kill Player",
+        Callback = function()
+            local target = getSelectedPlayer()
+            if target and target.Character and target.Character:FindFirstChild("Humanoid") then
+                target.Character.Humanoid.Health = 0
+            end
+        end
+    })
+
+    TabAdmin:AddButton({
+        Name = "Bring Player",
+        Callback = function()
+            local target = getSelectedPlayer()
+            if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+               and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                target.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame + Vector3.new(2, 0, 0)
+            end
+        end
+    })
+
+    TabAdmin:AddButton({
+        Name = "TP até Player",
+        Callback = function()
+            local target = getSelectedPlayer()
+            if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+               and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame + Vector3.new(2, 0, 0)
+            end
+        end
+    })
+end
